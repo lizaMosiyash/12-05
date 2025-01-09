@@ -15,9 +15,10 @@ SELECT table_schema, sum(index_length / data_length) * 100 "Size in %" FROM info
 Для оптимизации скрипта были удалены лишние таблицы, добавлен индекс payment_date, изменено условие для использования индекса
 
 ```
-select distinct  concat(c.last_name, ' ', c.first_name ), sum(p.amount) over (partition by c.customer_id )
-from payment p, rental r, customer c
-where p.payment_date >= '2005-07-30 00:00:00' AND p.payment_date < '2005-07-30 23:59:59'  and p.payment_date = r.rental_date and r.customer_id = c.customer_id
+explain analyze select distinct concat(c.last_name, ' ', c.first_name ), sum(p.amount)
+from  payment p inner join customer c on c.customer_id = p.customer_id
+where p.payment_date >= '2005-07-30' and p.payment_date < date_add('2005-07-30', INTERVAL 1 DAY) group by p.customer_id;
 
 ```
 
+![screenshot](https://github.com/lizaMosiyash/12-05/blob/master/screenshots/Снимок.PNG)
